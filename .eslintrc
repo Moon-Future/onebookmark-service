@@ -9,6 +9,6 @@
     */
     "no-unused-vars": "off", // 声明未使用，不报错
     "quotes": [1, "single"], // 引号类型 `` "" ''
-    "semi": [2, "nerer"]
+    "semi": [2, "never"]
   }
 }
