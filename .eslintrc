@@ -1,4 +1,14 @@
 {
   "extends": "eslint-config-egg",
-  "root": true
+  "root": true,
+  "rules": {
+    /*
+      0 或"off"：  关闭规则。
+      1 或"warn"： 打开规则，并且作为一个警告，字体颜色为黄色（并不会导致检查不通过）。
+      2 或"error"：打开规则，并且作为一个错误 ，色体颜色为红色(退出码为1，检查不通过)。
+    */
+    "no-unused-vars": "off", // 声明未使用，不报错
+    "quotes": [1, "single"], // 引号类型 `` "" ''
+    "semi": [2, "nerer"]
+  }
 }
