@@ -1,5 +1,6 @@
 {
-  "extends": "eslint-config-egg",
+  // "extends": "eslint-config-egg",
+  "extends": ["plugin:vue/essential", "eslint:recommended", "@vue/prettier"],
   "root": true,
   "rules": {
     /*
