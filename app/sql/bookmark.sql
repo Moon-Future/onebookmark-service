@@ -5,6 +5,7 @@ CREATE TABLE `bookmark` (
   `id` varchar(256) COLLATE utf8mb4_general_ci NOT NULL,
   `web_name` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `web_url` varchar(1024) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `web_host` varchar(1024) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '域名，与icon对应',
   `icon_url` text COLLATE utf8mb4_general_ci,
   `folder_status` tinyint(1) DEFAULT NULL,
   `parent_id` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
