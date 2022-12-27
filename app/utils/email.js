@@ -13,7 +13,7 @@ const account = emailInfo.account
 
 const transporter = nodemailer.createTransport({
   // host: 'smtp.qq.email',
-  service: 'qq',
+  service: '163',
   port: 465,
   secure: true, // true for 465, false for other ports 587
   auth: {
@@ -23,7 +23,7 @@ const transporter = nodemailer.createTransport({
 })
 
 var mailOptions = {
-  from: 'LeonChan <236338364@qq.com>', // sender address
+  from: '一个书签 <yigeshuqian@163.com>', // sender address
   to: '236338364@qq.com', // list of receivers
   subject: '', // Subject line
   // text: '有新注册用户', // plain text body

@@ -24,6 +24,15 @@ function checkToken(ctx) {
   }
 }
 
+// 随机生成数字 ID
+function createId(len = 6) {
+  return Math.random().toString().slice(-len)
+}
+
+function random(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
 // 创建实例
 const cos = new COS({
   SecretId: tencentCloud.SecretId,
@@ -130,4 +139,4 @@ const getWebSiteInfo = async (targetUrl) => {
   return res
 }
 
-module.exports = { checkToken, cosUpload, getWebSiteInfo }
+module.exports = { checkToken, cosUpload, getWebSiteInfo, createId }
