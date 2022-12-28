@@ -15,4 +15,7 @@ module.exports = app => {
   router.post('/api/bookmark/getWebsiteTitleAndIcon/', controller.bookmark.getWebsiteTitleAndIcon)
 
   router.post('/api/user/sendCode/', controller.user.sendCode)
+  router.post('/api/user/login/', controller.user.login)
+  router.post('/api/user/register/', controller.user.register)
+  router.post('/api/user/getUserInfo/', controller.user.getUserInfo)
 };

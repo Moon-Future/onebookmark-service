@@ -143,7 +143,7 @@ class BookmarkController extends Controller {
     try {
       const { userId } = ctx.request.body
       const res = await conn.select('bookmark', {
-        where: { delete_status: 0 },
+        where: { delete_status: 0, user_id: userId },
       })
       await conn.commit()
       ctx.body = { status: 1, data: res }
@@ -172,6 +172,10 @@ class BookmarkController extends Controller {
         sort = res[res.length - 1].sort_number + 1
       }
       if (!folderStatus) {
+        if (!parentID) {
+          ctx.body = { status: 0, message: '请先选择目录或新建目录' }
+          return
+        }
         const webInfo = await getWebIcon(url, conn)
         icon = webInfo.iconUrl
       }

@@ -1,10 +1,11 @@
 const jwt = require('jsonwebtoken')
 const COS = require('cos-nodejs-sdk-v5')
-const { tokenConfig, tencentCloud } = require('../../config/secret')
+const { tokenConfig, tencentCloud, hmacKey } = require('../../config/secret')
 const cheerio = require('cheerio')
 const charset = require('superagent-charset')
 const superagent = charset(require('superagent'))
 const path = require('path')
+const crypto = require('crypto')
 
 // 验证是否登陆
 function checkToken(ctx) {
@@ -25,7 +26,7 @@ function checkToken(ctx) {
 }
 
 // 随机生成数字 ID
-function createId(len = 6) {
+function randomCode(len = 6) {
   return Math.random().toString().slice(-len)
 }
 
@@ -139,4 +140,10 @@ const getWebSiteInfo = async (targetUrl) => {
   return res
 }
 
-module.exports = { checkToken, cosUpload, getWebSiteInfo, createId }
+// 加盐加密
+const encryptByHmac = (text) => {
+  const result = crypto.createHmac('sha1', hmacKey).update(text).digest('hex')
+  return result
+}
+
+module.exports = { checkToken, cosUpload, getWebSiteInfo, randomCode, encryptByHmac }
