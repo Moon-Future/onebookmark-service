@@ -1,10 +1,12 @@
 'use strict'
 const Controller = require('egg').Controller
-const { getWebSiteInfo } = require('../utils/index')
+const { getWebSiteInfo, checkToken } = require('../utils/index')
 
 class BookmarkController extends Controller {
   async importBookmark() {
     const { ctx, app } = this
+    const userInfo = checkToken(ctx)
+    if (!userInfo) return
     const conn = await app.mysql.beginTransaction()
     try {
       const { bookmarks } = ctx.request.body
@@ -19,7 +21,7 @@ class BookmarkController extends Controller {
           folder_status: item.folder ? 1 : 0,
           parent_id: item.parentId,
           sort_number: item.sort,
-          user_id: '8023',
+          user_id: userInfo.id,
         })
       }
       await conn.insert('bookmark', insertData)
@@ -35,6 +37,8 @@ class BookmarkController extends Controller {
 
   async modifyBookmark() {
     const { ctx, app } = this
+    const userInfo = checkToken(ctx)
+    if (!userInfo) return
     const conn = await app.mysql.beginTransaction()
     try {
       const { bookmark } = ctx.request.body
@@ -53,6 +57,8 @@ class BookmarkController extends Controller {
 
   async moveBookmark() {
     const { ctx, app } = this
+    const userInfo = checkToken(ctx)
+    if (!userInfo) return
     const conn = await app.mysql.beginTransaction()
     try {
       const { bookmark, parentID } = ctx.request.body
@@ -80,6 +86,8 @@ class BookmarkController extends Controller {
 
   async removeBookmark() {
     const { ctx, app } = this
+    const userInfo = checkToken(ctx)
+    if (!userInfo) return
     const conn = await app.mysql.beginTransaction()
     try {
       const { bookmark } = ctx.request.body
@@ -121,6 +129,8 @@ class BookmarkController extends Controller {
 
   async sortBookmark() {
     const { ctx, app } = this
+    const userInfo = checkToken(ctx)
+    if (!userInfo) return
     const conn = await app.mysql.beginTransaction()
     try {
       const { sortMap } = ctx.request.body
@@ -139,11 +149,13 @@ class BookmarkController extends Controller {
 
   async getBookmark() {
     const { ctx, app } = this
+    const userInfo = checkToken(ctx)
+    if (!userInfo) return
     const conn = await app.mysql.beginTransaction()
     try {
       const { userId } = ctx.request.body
       const res = await conn.select('bookmark', {
-        where: { delete_status: 0, user_id: userId },
+        where: { delete_status: 0, user_id: userInfo.id },
       })
       await conn.commit()
       ctx.body = { status: 1, data: res }
@@ -157,6 +169,8 @@ class BookmarkController extends Controller {
 
   async addNewNode() {
     const { ctx, app } = this
+    const userInfo = checkToken(ctx)
+    if (!userInfo) return
     const conn = await app.mysql.beginTransaction()
     try {
       let { parentID, id, name, url, icon, folderStatus, desc = '' } = ctx.request.body
@@ -187,7 +201,8 @@ class BookmarkController extends Controller {
         folder_status: folderStatus ? 1 : 0,
         parent_id: parentID,
         sort_number: sort,
-        web_desc: desc.slice(0, 1000)
+        web_desc: desc.slice(0, 1000),
+        user_id: userInfo.id
       })
       await conn.commit()
       ctx.body = { status: 1, data: { sort, icon } }
@@ -201,6 +216,8 @@ class BookmarkController extends Controller {
 
   async getWebsiteTitleAndIcon() {
     const { ctx, app } = this
+    const userInfo = checkToken(ctx)
+    if (!userInfo) return
     const conn = await app.mysql.beginTransaction()
     try {
       const { url } = ctx.request.body

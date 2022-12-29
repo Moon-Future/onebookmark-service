@@ -38,7 +38,7 @@ drop table if exists user_config;
 create table user_config(
   id bigint(20) PRIMARY key AUTO_INCREMENT ,
 	user_id varchar(256) not null comment '用户id',
-	config_type int not null default 1 comment '设置类型 1-时钟,2-秒钟，3-首页, 4-时钟进制',
+	config_type varchar(256) not null default '' comment '设置类型 wallpaper:壁纸',
 	config_value varchar(256) default '' comment '配置value',
 	config_status tinyint(1) not null  default 1 comment '是否启用 1-启用 0-关闭',
 	delete_status tinyint(1) not null  default 0 comment '是否启用 0-不删除 1-删除',

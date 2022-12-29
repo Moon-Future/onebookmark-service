@@ -16,7 +16,7 @@ function checkToken(ctx) {
     return false
   }
   try {
-    const userInfo = jwt.verify(token.split(' ')[1], tokenConfig.privateKey)
+    const userInfo = jwt.verify(token, tokenConfig.privateKey)
     return userInfo
   } catch (err) {
     ctx.status = 403

@@ -1,6 +1,6 @@
 'use strict'
 const Controller = require('egg').Controller
-const { randomCode, encryptByHmac } = require('../utils/index')
+const { randomCode, encryptByHmac, checkToken } = require('../utils/index')
 const { transporter, mailOptions } = require('../utils/email')
 const { privateKey, tokenConfig } = require('../../config/secret')
 const JSEncrypt = require('node-jsencrypt')
@@ -125,13 +125,63 @@ class UserController extends Controller {
   async getUserInfo() {
     const { ctx, app } = this
     try {
-      const { token } = ctx.request.body
-      const userInfo = jwt.verify(token, tokenConfig.privateKey)
+      const userInfo = checkToken(ctx)
       ctx.body = { status: 1, data: userInfo }
     } catch (e) {
       console.log(e)
       ctx.status = 500
       ctx.body = { message: '服务端出错' }
+    }
+  }
+
+  async getUserConfig() {
+    const { ctx, app } = this
+    const userInfo = checkToken(ctx)
+    if (!userInfo) return
+    try {
+      const { configTypeList } = ctx.request.body
+      const res = await app.mysql.select('user_config', {
+        where: {
+          user_id: userInfo.id,
+          delete_status: 0,
+          config_type: configTypeList
+        }
+      })
+      const configMap = {}
+      res.forEach(ele => {
+        configMap[ele.config_type] = ele
+      })
+      ctx.body = { status: 1, data: configMap }
+    } catch (e) {
+      console.log(e)
+      ctx.status = 500
+      ctx.body = { message: '服务端出错' }
+    }
+  }
+
+  async setUserConfig() {
+    const { ctx, app } = this
+    const userInfo = checkToken(ctx)
+    if (!userInfo) return
+    const conn = await app.mysql.beginTransaction()
+    try {
+      const { configMap } = ctx.request.body
+      const insertData = []
+      for (let key in configMap) {
+        insertData.push({
+          user_id: userInfo.id,
+          config_type: key,
+          config_value: configMap[key],
+        })
+      }
+      await conn.insert('user_config', insertData)
+      await conn.commit()
+      ctx.body = { status: 1 }
+    } catch (e) {
+      await conn.rollback()
+      console.log(e)
+      ctx.status = 500
+      ctx.body = { status: 0 }
     }
   }
 }
