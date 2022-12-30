@@ -40,26 +40,39 @@ const cos = new COS({
   SecretKey: tencentCloud.SecretKey,
 })
 
-const cosUpload = function (fileName, filePath, bucketInfo) {
+const cosUpload = function ({ fileName, filePath, dataBuffer }) {
   // 分片上传
   return new Promise((resolve, reject) => {
-    cos.sliceUploadFile(
-      {
-        Bucket: bucketInfo.bucket,
-        Region: bucketInfo.region,
-        Key: fileName,
-        FilePath: filePath,
-      },
-      function (err, data) {
-        // console.log('err', err)
-        // console.log('data', data)
-        if (err) {
-          reject(err)
-          return
+    const params = {
+      Bucket: tencentCloud.Bucket,
+      Region: tencentCloud.Region,
+      Key: fileName
+    }
+    if (filePath) {
+      params.FilePath = filePath
+      cos.sliceUploadFile(
+        params,
+        function (err, data) {
+          if (err) {
+            reject(err)
+            return
+          }
+          resolve(data)
         }
-        resolve(data)
-      }
-    )
+      )
+    } else if (dataBuffer) {
+      params.Body = dataBuffer
+      cos.putObject(
+        params,
+        function (err, data) {
+          if (err) {
+            reject(err)
+            return
+          }
+          resolve(data)
+        }
+      )
+    }
   })
 }
 
@@ -78,7 +91,7 @@ const resolvePage = (url, encodeing = 'utf-8', opts = {}) => {
         .end((err, res) => {
           if (err) {
             reject(err)
-            throw Error(err)
+            // throw Error(err)
           }
           let $content = cheerio.load(res.text, { decodeEntities: false })
           resolve($content)
@@ -90,7 +103,7 @@ const resolvePage = (url, encodeing = 'utf-8', opts = {}) => {
         .end((err, res) => {
           if (err) {
             reject(err)
-            throw Error(err)
+            // throw Error(err)
           }
           let $content = cheerio.load(res.text, { decodeEntities: false })
           resolve($content)
@@ -101,22 +114,28 @@ const resolvePage = (url, encodeing = 'utf-8', opts = {}) => {
 
 const resolveHtml = (targetUrl) => {
   return new Promise(async (resolve) => {
+    if (targetUrl.includes('localhost:')) {
+      resolve({ title: '', iconUrl: '' })
+      return
+    }
     try {
       let defaultUrl = '' // 自己默认的图片链接
       let $ = await resolvePage(targetUrl)
       let iconUrl = $("link[rel*='icon']").eq(0).attr('href')
+      console.log('iconUrl111', iconUrl)
       if (!iconUrl) {
         iconUrl = path.join(targetUrl.replace('https://', '').replace('http://', '').split('/')[0], '/favicon.ico')
-      } else if (!iconUrl.includes('http://') && !iconUrl.includes('https://')) {
+      } else if (!iconUrl.includes('//')) {
         if (iconUrl[0] === '/') {
           iconUrl = path.join(targetUrl.replace('https://', '').replace('http://', '').split('/')[0], iconUrl)
         } else {
           iconUrl = path.join(targetUrl, iconUrl)
         }
       }
-      if (iconUrl !== '' && !iconUrl.includes('http://') && !iconUrl.includes('https://')) {
+      if (iconUrl !== '' && !iconUrl.includes('//')) {
         iconUrl = `//${iconUrl}`
       }
+      console.log('iconUrl222', iconUrl)
       iconUrl = iconUrl.replace(/\\/g, '/')
       let title = $('title').eq(0).text()
       if ($('title').length === 0) {

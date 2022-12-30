@@ -11,13 +11,26 @@ class BookmarkController extends Controller {
     try {
       const { bookmarks } = ctx.request.body
       const insertData = []
+
+      const iconRes = await conn.select('web_icon')
+      const iconMap = {}
+      iconRes.forEach(item => {
+        iconMap[item.web_url] = item.icon_url
+      })
+
       for (let key in bookmarks) {
         const item = bookmarks[key]
+        let hostUrl = item.url.replace('https://', '').replace('http://', '').split('/')[0]
+        if (hostUrl.split('.').length === 2) {
+          hostUrl = `www.${hostUrl}`
+        }
         insertData.push({
           id: item.id,
           web_name: item.label,
           web_url: item.url || '',
-          icon_url: item.icon || '',
+          web_host: hostUrl,
+          icon_url: iconMap[hostUrl] || item.icon || '',
+          icon_status: item.folder || iconMap[hostUrl] ? 1 : 0,
           folder_status: item.folder ? 1 : 0,
           parent_id: item.parentId,
           sort_number: item.sort,

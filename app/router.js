@@ -20,4 +20,6 @@ module.exports = app => {
   router.post('/api/user/getUserInfo/', controller.user.getUserInfo)
   router.post('/api/user/getUserConfig/', controller.user.getUserConfig)
   router.post('/api/user/setUserConfig/', controller.user.setUserConfig)
+
+  router.post('/api/task/webIconTask/', controller.task.webIconTask)
 };

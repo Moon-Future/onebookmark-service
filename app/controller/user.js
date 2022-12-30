@@ -149,7 +149,7 @@ class UserController extends Controller {
       })
       const configMap = {}
       res.forEach(ele => {
-        configMap[ele.config_type] = ele
+        configMap[ele.config_type] = ele.config_value === 'true' ? true : (ele.config_value === 'false' ? false : ele.config_value)
       })
       ctx.body = { status: 1, data: configMap }
     } catch (e) {
@@ -165,16 +165,13 @@ class UserController extends Controller {
     if (!userInfo) return
     const conn = await app.mysql.beginTransaction()
     try {
-      const { configMap } = ctx.request.body
-      const insertData = []
-      for (let key in configMap) {
-        insertData.push({
-          user_id: userInfo.id,
-          config_type: key,
-          config_value: configMap[key],
-        })
+      const { type, value } = ctx.request.body
+      const res = await conn.get('user_config', { config_type: type, delete_status: 0 })
+      if (res) {
+        await conn.update('user_config', { id: res.id, config_value: value + '' })
+      } else {
+        await conn.insert('user_config', { user_id: userInfo.id, config_type: type, config_value: value + '' })
       }
-      await conn.insert('user_config', insertData)
       await conn.commit()
       ctx.body = { status: 1 }
     } catch (e) {

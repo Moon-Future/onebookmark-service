@@ -7,6 +7,7 @@ CREATE TABLE `bookmark` (
   `web_url` varchar(1024) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `web_host` varchar(1024) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '域名，与icon对应',
   `icon_url` text COLLATE utf8mb4_general_ci,
+  `icon_status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '图标是否已经对应',
   `folder_status` tinyint(1) DEFAULT NULL,
   `parent_id` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `sort_number` int DEFAULT NULL,
