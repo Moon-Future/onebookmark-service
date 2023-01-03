@@ -122,7 +122,6 @@ const resolveHtml = (targetUrl) => {
       let defaultUrl = '' // 自己默认的图片链接
       let $ = await resolvePage(targetUrl)
       let iconUrl = $("link[rel*='icon']").eq(0).attr('href')
-      console.log('iconUrl111', iconUrl)
       if (!iconUrl) {
         iconUrl = path.join(targetUrl.replace('https://', '').replace('http://', '').split('/')[0], '/favicon.ico')
       } else if (!iconUrl.includes('//')) {
@@ -135,7 +134,6 @@ const resolveHtml = (targetUrl) => {
       if (iconUrl !== '' && !iconUrl.includes('//')) {
         iconUrl = `//${iconUrl}`
       }
-      console.log('iconUrl222', iconUrl)
       iconUrl = iconUrl.replace(/\\/g, '/')
       let title = $('title').eq(0).text()
       if ($('title').length === 0) {

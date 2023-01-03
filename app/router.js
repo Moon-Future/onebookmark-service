@@ -5,6 +5,8 @@
  */
 module.exports = app => {
   const { router, controller } = app;
+  router.get('/*', controller.home.index)
+
   router.post('/api/bookmark/importBookmark/', controller.bookmark.importBookmark)
   router.post('/api/bookmark/modifyBookmark/', controller.bookmark.modifyBookmark)
   router.post('/api/bookmark/moveBookmark/', controller.bookmark.moveBookmark)

@@ -2,6 +2,7 @@
 
 'use strict'
 const { mysql } = require('./secret')
+const path = require('path')
 
 /**
  * @param {Egg.EggAppInfo} appInfo app info
@@ -26,7 +27,7 @@ module.exports = (appInfo) => {
 
   config.cluster = {
     listen: {
-      port: 5555,
+      port: 8885,
     },
   }
 
@@ -83,6 +84,11 @@ module.exports = (appInfo) => {
     jsonLimit: '30mb',
     textLimit: '30mb',
     // 值的大小可以根据自己的需求修改 这里只做演示
+  }
+
+  config.static = {
+    prefix: '/',
+    dir: path.join(appInfo.baseDir, 'app/dist')
   }
 
   return {
