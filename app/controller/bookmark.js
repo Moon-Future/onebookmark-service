@@ -1,6 +1,7 @@
 'use strict'
 const Controller = require('egg').Controller
 const { getWebSiteInfo, checkToken } = require('../utils/index')
+const axios = require('axios')
 
 class BookmarkController extends Controller {
   async importBookmark() {
@@ -260,6 +261,25 @@ class BookmarkController extends Controller {
       console.log(e)
       ctx.status = 500
       ctx.body = { message: '服务端出错' }
+    }
+  }
+
+  // 获取网站标题
+  async getTitle() {
+    const { ctx, app } = this
+    const { url } = ctx.request.body
+    try {
+      const res = await axios.get('https://tenapi.cn/title/', {
+        params: { url }
+      })
+      if (res.data.code === 200) {
+        ctx.body = { status: 1, data: res.data.data }
+      } else {
+        ctx.body = { status: 0, message: '获取失败，请确认地址是否正确或自行输入' }
+      }
+    } catch (e) {
+      ctx.status = 500
+      ctx.body = { message: '获取失败，请确认地址是否正确或自行输入' }
     }
   }
 }
