@@ -166,7 +166,7 @@ class UserController extends Controller {
     const conn = await app.mysql.beginTransaction()
     try {
       const { type, value } = ctx.request.body
-      const res = await conn.get('user_config', { config_type: type, delete_status: 0 })
+      const res = await conn.get('user_config', { config_type: type, delete_status: 0, user_id: userInfo.id })
       if (res) {
         await conn.update('user_config', { id: res.id, config_value: value + '' })
       } else {
